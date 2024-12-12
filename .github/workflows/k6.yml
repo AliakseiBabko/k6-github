@@ -1,0 +1,21 @@
+name: Run k6 Load Test
+
+on: [workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up k6 using Docker
+        run: |
+          docker pull loadimpact/k6:latest
+          docker run --rm -v ${{ github.workspace }}:/scripts loadimpact/k6 run /scripts/test.js
+
+      - name: Upload test results to GitHub (optional)
+        if: failure()  # This step will run if the test fails
+        run: |
+          echo "Performance test failed, check results"
